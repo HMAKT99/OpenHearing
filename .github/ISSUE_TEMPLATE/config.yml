@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Hearing-safety or security issue
-    url: https://github.com/arunkt/openhearing/security/advisories/new
+    url: https://github.com/HMAKT99/OpenHearing/security/advisories/new
     about: Please report dangerously-loud-audio bugs and security issues privately (see SECURITY.md).
   - name: AirPods protocol / hardware testing
-    url: https://github.com/arunkt/openhearing/blob/main/docs/PROTOCOL.md
+    url: https://github.com/HMAKT99/OpenHearing/blob/main/docs/PROTOCOL.md
     about: Have AirPods Pro 2/3 + an Android phone? Here's how to help verify the protocol.
