@@ -1,0 +1,31 @@
+# Gradle
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.cxx/
+
+# Kotlin / IntelliJ / Android Studio
+*.iml
+.idea/
+.kotlin/
+out/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Signing / secrets — never commit these
+*.jks
+*.keystore
+keystore.properties
+secrets.properties
+google-services.json

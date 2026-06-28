@@ -1,0 +1,47 @@
+# Detekt configuration for OpenHearing.
+# Builds upon the default config (see buildUponDefaultConfig in root build).
+# Kept lean for Phase 0; rules will tighten as the codebase grows.
+
+build:
+  maxIssues: 0
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 80
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 8
+  TooManyFunctions:
+    active: false
+
+style:
+  MagicNumber:
+    # DSP / audiogram code is full of meaningful constants (frequencies, dB
+    # levels). We document those in code; don't flag them as "magic".
+    active: false
+  ReturnCount:
+    active: true
+    max: 4
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+  WildcardImport:
+    active: true
+  UnusedPrivateMember:
+    active: true
+    # @Preview composables are entry points for tooling, not dead code.
+    ignoreAnnotated: ['Preview', 'Composable']
+
+naming:
+  FunctionNaming:
+    # Allow @Composable functions to be PascalCase.
+    ignoreAnnotated: ['Composable']
+
+comments:
+  active: true
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false

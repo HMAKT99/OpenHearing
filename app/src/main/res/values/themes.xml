@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      The Compose UI supplies the real Material 3 theming (see ui/theme/Theme.kt).
+      This XML theme only needs to give the Activity window a sane, no-action-bar
+      base before Compose takes over.
+    -->
+    <style name="Theme.OpenHearing" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

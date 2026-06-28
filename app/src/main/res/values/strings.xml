@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">OpenHearing</string>
+    <string name="tagline">Open-source hearing assistance for Android.</string>
+
+    <string name="disclaimer_title">Not a medical device</string>
+    <string name="disclaimer_body">OpenHearing is a sound-amplification and hearing-assistance tool. It is NOT a medical device and is NOT a substitute for a professional hearing exam. It does not diagnose or treat any condition. If you have concerns about your hearing, please see an audiologist or doctor. Always keep the volume at a comfortable level and stop if you feel any discomfort.</string>
+</resources>
