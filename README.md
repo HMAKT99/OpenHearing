@@ -45,8 +45,9 @@ explicit about what is real, what is stubbed, and what is unverified.
 |---|---|
 | Multi-module project skeleton, CI, docs | ✅ In place |
 | Safety ceiling constants + brick-wall limiter primitive + tests | ✅ In place (full streaming limiter is a Phase 2 gate) |
-| Audiogram model | ✅ Model only; screening logic is Phase 1 |
-| Pure-tone screening (staircase) + audiogram→gain fitting | 🚧 Phase 1 |
+| Audiogram model | ✅ In place |
+| Pure-tone screening (Hughson–Westlake staircase) + audiogram→gain fitting | ✅ Phase 1 — pure-Kotlin engine, unit-tested ([fitting rationale](docs/FITTING.md)) |
+| Hearing-test debug screen (runs on phone speaker / any headset) | ✅ Phase 1 — see [device testing](docs/DEVICE_TESTING.md) |
 | Real-time capture→process→playback, WDRC, feedback guard | 🚧 Phase 2 |
 | AirPods Pro 2/3 detection, battery, transparency routing | ❓ Phase 3 — **UNVERIFIED protocol**, see [docs/PROTOCOL.md](docs/PROTOCOL.md) |
 | Onboarding, profiles, persistence, accessibility | 🚧 Phase 4 |
