@@ -4,4 +4,9 @@
 
     <string name="disclaimer_title">Not a medical device</string>
     <string name="disclaimer_body">OpenHearing is a sound-amplification and hearing-assistance tool. It is NOT a medical device and is NOT a substitute for a professional hearing exam. It does not diagnose or treat any condition. If you have concerns about your hearing, please see an audiologist or doctor. Always keep the volume at a comfortable level and stop if you feel any discomfort.</string>
+
+    <string name="assist_channel_name">Hearing assist</string>
+    <string name="assist_active_title">Hearing assist is on</string>
+    <string name="assist_active_text">Amplifying sound around you. Tap Stop to turn off.</string>
+    <string name="assist_stop">Stop</string>
 </resources>
