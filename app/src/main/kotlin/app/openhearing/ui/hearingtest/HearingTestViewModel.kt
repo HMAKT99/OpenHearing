@@ -11,6 +11,8 @@ import app.openhearing.common.Ear
 import app.openhearing.core.audio.ToneGenerator
 import app.openhearing.core.audio.ToneLevel
 import app.openhearing.core.audio.TonePlayer
+import app.openhearing.data.ProfileRepository
+import app.openhearing.data.activeProfileFrom
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,6 +60,7 @@ constructor(
     private val toneGenerator: ToneGenerator,
     private val tonePlayer: TonePlayer,
     private val fittingStrategy: FittingStrategy,
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
     private val config = StaircaseConfig()
     private var screening: PureToneScreening? = null
@@ -157,6 +160,10 @@ constructor(
                 audiogram = audiogram,
                 gains = gains,
             )
+        }
+        // Persist the result as the active profile so assist mode can use it.
+        viewModelScope.launch {
+            runCatching { profileRepository.save(activeProfileFrom(audiogram)) }
         }
     }
 

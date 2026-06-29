@@ -5,20 +5,45 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-// This app is for people with hearing difficulty; the palette favours high
-// contrast. Full accessibility theming (large type, dynamic color, contrast
-// options) is built out in Phase 4.
-private val LightColors =
-    lightColorScheme()
+// This app is for people with hearing difficulty; type scales with the system
+// font size automatically, and a high-contrast palette is offered for low vision.
+private val LightColors = lightColorScheme()
+private val DarkColors = darkColorScheme()
 
-private val DarkColors =
-    darkColorScheme()
+// Maximum-contrast palette (near-black on white / white on near-black).
+private val HighContrastLight =
+    lightColorScheme(
+        primary = Color.Black,
+        onPrimary = Color.White,
+        background = Color.White,
+        onBackground = Color.Black,
+        surface = Color.White,
+        onSurface = Color.Black,
+    )
+private val HighContrastDark =
+    darkColorScheme(
+        primary = Color.White,
+        onPrimary = Color.Black,
+        background = Color.Black,
+        onBackground = Color.White,
+        surface = Color.Black,
+        onSurface = Color.White,
+    )
 
 @Composable
-fun OpenHearingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) DarkColors else LightColors,
-        content = content,
-    )
+fun OpenHearingTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    highContrast: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    val colors =
+        when {
+            highContrast && darkTheme -> HighContrastDark
+            highContrast -> HighContrastLight
+            darkTheme -> DarkColors
+            else -> LightColors
+        }
+    MaterialTheme(colorScheme = colors, content = content)
 }
