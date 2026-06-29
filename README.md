@@ -48,9 +48,12 @@ explicit about what is real, what is stubbed, and what is unverified.
 | Audiogram model | ✅ In place |
 | Pure-tone screening (Hughson–Westlake staircase) + audiogram→gain fitting | ✅ Phase 1 — pure-Kotlin engine, unit-tested ([fitting rationale](docs/FITTING.md)) |
 | Hearing-test debug screen (runs on phone speaker / any headset) | ✅ Phase 1 — see [device testing](docs/DEVICE_TESTING.md) |
-| Real-time capture→process→playback, WDRC, feedback guard | 🚧 Phase 2 |
+| Real-time assist: EQ + WDRC + feedback guard + look-ahead limiter | ✅ Phase 2 — pure-Kotlin DSP, unit-tested; limiter safety suite is the release gate |
+| Android capture→process→playback engine + foreground assist service | ✅ Phase 2 — **needs on-device validation**, see [device testing](docs/DEVICE_TESTING.md) |
+| Onboarding/consent, profile persistence, assist UI, accessibility | ✅ Phase 4 |
+| Comfort calibration + output ceiling | ✅ — see [docs/CALIBRATION.md](docs/CALIBRATION.md) (true dB SPL calibration still needs a meter) |
+| Signed release build, privacy policy, F-Droid metadata | ✅ Phase 5 — see [docs/RELEASE.md](docs/RELEASE.md) |
 | AirPods Pro 2/3 detection, battery, transparency routing | ❓ Phase 3 — **UNVERIFIED protocol**, see [docs/PROTOCOL.md](docs/PROTOCOL.md) |
-| Onboarding, profiles, persistence, accessibility | 🚧 Phase 4 |
 
 **On AirPods specifically:** the AirPods Bluetooth/L2CAP control protocol is
 **reverse-engineered, not public.** We build on the documented work in
