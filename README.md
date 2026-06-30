@@ -94,6 +94,29 @@ and [docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md) for details.
 
 ---
 
+## Privacy
+
+Privacy is **platform-enforced, not just promised**: OpenHearing declares **no
+`INTERNET` permission**, so it physically cannot make network calls. Your hearing
+data, profile, and audio never leave the device — and microphone audio in assist
+mode is processed in real time and **never recorded or transmitted**.
+
+- **No accounts, no ads, no analytics, no trackers, no network.**
+- Dependencies are AndroidX / Compose / Hilt / Kotlin only — no Google Play
+  Services, Firebase, or ad/analytics SDKs.
+
+Verify it yourself from the APK:
+
+```bash
+aapt dump permissions OpenHearing-<version>.apk
+```
+
+The only permissions are `RECORD_AUDIO` (the mic for assist mode),
+`FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MICROPHONE` (to keep assist running with
+a visible notification), and `POST_NOTIFICATIONS`. See [docs/PRIVACY.md](docs/PRIVACY.md).
+
+---
+
 ## Build from source
 
 **Requirements:** JDK 17, Android SDK (API 35, build-tools 35.0.0). Point the build

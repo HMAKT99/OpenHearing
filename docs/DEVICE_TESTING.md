@@ -4,6 +4,37 @@ Some parts of OpenHearing can only be validated on a real phone (audio output,
 and later BLE/AirPods). This is the maintainer's hands-on checklist. Automated
 unit tests cover the pure logic; this covers what they can't.
 
+## Validation status
+
+### ✅ Emulator smoke test — assist mode (2026-06-30, signed release / R8 build)
+
+Ran the full flow on a headless Android 15 (API 35) emulator with the **signed
+release (R8-minified) APK**:
+
+- Install → onboarding → screening completed (profile saved) → assist screen →
+  **Start assist** → ran ~8 s → **Stop**.
+- **No crashes** (process stayed alive through start and stop); UI reached the
+  running state ("Stop assist" shown).
+- **Foreground microphone service started cleanly** (`Background started FGS:
+  Allowed … AssistService … targetSdkVersion:35`).
+- Audio path engaged: `AudioFlinger … thread ready to run` + active mixing for the
+  duration. **No `AudioRecord`/`AudioTrack` errors** — mic capture
+  (`VOICE_COMMUNICATION`, mono, PCM-float) and playback both initialized.
+
+**What this proves:** the real-time pipeline (AudioRecord → DSP chain → AudioTrack,
+inside the foreground service) **initializes and runs on Android without crashing**,
+including in the minified release build.
+
+**What it does NOT prove (not yet verified on a physical device):**
+- Audio *quality* — the emulator mic feeds silence, so this confirms the pipeline
+  runs/plays, not that real speech is made clearer.
+- *Loudness safety* on real ears and real earbuds.
+- *Latency* — the emulator **denied the low-latency "fast" output path**
+  (`createTrack_l(): mismatch between requested flags (00000004) and output flags
+  (00000002)` → fell back to the normal output). Expected on an emulator; **confirm
+  real-device latency** with a fast-mixer-capable device.
+- Feedback/howl behavior with real acoustic mic↔speaker coupling; AirPods.
+
 ## Prerequisites
 
 - Android phone (API 26+), USB debugging on, `adb` available.
