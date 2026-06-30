@@ -1,20 +1,18 @@
 # OpenHearing
 
-**Free, open-source hearing assistance for Android.**
+**Free, open-source hearing assistance for Android — no root, any earbuds.**
 
-Apple ships a hearing screening and a hearing-aid ("Hearing Aid" / transparency)
-mode on AirPods Pro 2 and Pro 3 — but locks those features to iPhone, iPad, and
-Mac. There is no equivalent on Android. OpenHearing aims to change that: a fully
-open hearing-assistance app that works with **any** earbuds, and does its best to
-make use of AirPods Pro 2/3 where the (reverse-engineered) protocol allows.
+[![CI](https://github.com/HMAKT99/OpenHearing/actions/workflows/ci.yml/badge.svg)](https://github.com/HMAKT99/OpenHearing/actions/workflows/ci.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-OpenHearing does three things:
+Apple ships a hearing screening and a hearing-aid mode on AirPods Pro 2/3 — but
+locks them to iPhone/iPad/Mac. OpenHearing brings open hearing assistance to
+**Android**, working with **any** earbuds: screen your hearing, build a
+personalized amplification profile, and boost quiet speech in real time.
 
-1. **Screen** — runs a pure-tone hearing screening on Android and produces a
-   per-ear, per-frequency audiogram.
-2. **Fit** — converts that audiogram into a real-time amplification / EQ profile.
-3. **Assist** — applies that profile to live audio so quiet speech becomes
-   easier to hear.
+> Complement to [LibrePods](https://github.com/kavishdevar/librepods): LibrePods
+> drives AirPods' own hearing-aid mode (root required); OpenHearing does its own
+> on-device processing — **no root, any earbuds.**
 
 ---
 
@@ -22,115 +20,143 @@ OpenHearing does three things:
 
 > **OpenHearing is a sound-amplification and hearing-assistance tool. It is NOT a
 > medical device, NOT a certified hearing aid, and NOT a substitute for a
-> professional hearing exam.** It does not diagnose or treat any condition.
->
-> The built-in screening is a convenience aid, not a clinical audiogram. If you
-> have any concerns about your hearing, please see an audiologist or doctor.
->
-> **Hearing safety:** the app plays calibrated tones and amplifies live sound. It
-> enforces a hard output-loudness ceiling, ramps tones gently, and always offers a
-> master volume cap and instant mute. Even so, keep the volume at a comfortable
-> level and stop immediately if you feel any discomfort.
-
-This notice also appears in the app's onboarding and before any test begins.
-
----
-
-## Project status — what's verified vs. not
-
-OpenHearing is in **early development (Phase 0: scaffold)**. We are deliberately
-explicit about what is real, what is stubbed, and what is unverified.
-
-| Area | Status |
-|---|---|
-| Multi-module project skeleton, CI, docs | ✅ In place |
-| Safety ceiling constants + brick-wall limiter primitive + tests | ✅ In place (full streaming limiter is a Phase 2 gate) |
-| Audiogram model | ✅ In place |
-| Pure-tone screening (Hughson–Westlake staircase) + audiogram→gain fitting | ✅ Phase 1 — pure-Kotlin engine, unit-tested ([fitting rationale](docs/FITTING.md)) |
-| Hearing-test debug screen (runs on phone speaker / any headset) | ✅ Phase 1 — see [device testing](docs/DEVICE_TESTING.md) |
-| Real-time assist: EQ + WDRC + feedback guard + look-ahead limiter | ✅ Phase 2 — pure-Kotlin DSP, unit-tested; limiter safety suite is the release gate |
-| Android capture→process→playback engine + foreground assist service | ✅ Phase 2 — **needs on-device validation**, see [device testing](docs/DEVICE_TESTING.md) |
-| Onboarding/consent, profile persistence, assist UI, accessibility | ✅ Phase 4 |
-| Comfort calibration + output ceiling | ✅ — see [docs/CALIBRATION.md](docs/CALIBRATION.md) (true dB SPL calibration still needs a meter) |
-| Signed release build, privacy policy, F-Droid metadata | ✅ Phase 5 — see [docs/RELEASE.md](docs/RELEASE.md) |
-| AirPods Pro 2/3 detection, battery, transparency routing | ❓ Phase 3 — **UNVERIFIED protocol**, see [docs/PROTOCOL.md](docs/PROTOCOL.md) |
-
-**On AirPods specifically:** the AirPods Bluetooth/L2CAP control protocol is
-**reverse-engineered, not public.** We build on the documented work in
-[LibrePods](https://github.com/kavishdevar/librepods) and CAPod. Anything we
-cannot confirm is isolated behind clean interfaces, marked `UNVERIFIED`, and
-paired with an on-device test. It is genuinely possible that some AirPods
-features cannot be controlled from Android without firmware access — which is
-exactly why **OpenHearing works fully with any earbuds first**, and treats
-AirPods as a best-effort enhancement.
+> professional hearing exam.** It does not diagnose or treat any condition. If you
+> have concerns about your hearing, see an audiologist or doctor. Keep the volume
+> comfortable and stop if anything is too loud.
 
 ---
 
 ## Screenshots
 
-_Coming soon._ <!-- TODO: add screenshots once Phase 1 UI lands -->
+<table>
+  <tr>
+    <td><img src="docs/images/onboarding.png" width="230" alt="Onboarding with safety disclaimer"></td>
+    <td><img src="docs/images/home.png" width="230" alt="Home screen"></td>
+    <td><img src="docs/images/screening.png" width="230" alt="Pure-tone hearing screening"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Onboarding</b><br/>acknowledge the disclaimer</td>
+    <td align="center"><b>Home</b></td>
+    <td align="center"><b>Screening</b><br/>heard / not-heard, with volume cap + stop</td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/results.png" width="230" alt="Audiogram and prescribed gain"></td>
+    <td><img src="docs/images/assist.png" width="230" alt="Hearing assist screen"></td>
+    <td><img src="docs/images/settings.png" width="230" alt="Settings and comfort calibration"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Results</b><br/>audiogram + prescribed gain</td>
+    <td align="center"><b>Hearing assist</b></td>
+    <td align="center"><b>Settings</b><br/>comfort calibration, high contrast</td>
+  </tr>
+</table>
+
+> Screenshots are from the running app on an emulator (the screening values shown
+> are from an automated test pass). ▶️ A real demo video is coming after on-device
+> validation.
+
+---
+
+## Features
+
+- 🎧 **Pure-tone hearing screening** — adaptive (Hughson–Westlake) staircase, per
+  ear, per frequency → an audiogram.
+- 🔊 **Real-time hearing assist** — multi-band gain from your audiogram, wide
+  dynamic-range compression, and a feedback/howl guard.
+- 🛡️ **Safety first** — a hard look-ahead output limiter (extensively tested),
+  comfort calibration to cap loudness, and an always-available instant **Stop**.
+- ♿ **Accessibility-first** — large controls, high-contrast theme, scalable text.
+- 🔒 **Private by design** — no accounts, no analytics, no ads, no network access.
+  Audio is processed on-device and never recorded or transmitted.
+- 🎧 **Any earbuds** — wired or Bluetooth; AirPods support is a future enhancement.
+
+---
+
+## How to use
+
+1. **Install** — sideload the APK from [Releases](https://github.com/HMAKT99/OpenHearing/releases)
+   (F-Droid coming). 
+2. **Read & accept** the safety disclaimer on first launch.
+3. **Run the hearing screening** — put on a headset in a quiet room, tap
+   **Run hearing screening → Start**. After each tone, tap **Yes, I heard it** or
+   **No, I didn't**. The volume cap and **Stop / mute** are always on screen.
+4. **Review your results** — a per-ear audiogram and the prescribed amplification
+   (half-gain rule). This is saved as your profile.
+5. **Turn on Hearing assist** — grant microphone access, set the amplification
+   level, tap **Start assist**. Sound around you is amplified in real time; tap
+   **Stop assist** any time.
+6. **Calibrate comfort** (Settings) — preview the maximum loudness and lower it
+   until comfortable; that caps how loud assist mode can ever get. Toggle the
+   high-contrast theme here too.
+
+See [docs/SAFETY.md](docs/SAFETY.md), [docs/CALIBRATION.md](docs/CALIBRATION.md),
+and [docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md) for details.
+
+---
+
+## Build from source
+
+**Requirements:** JDK 17, Android SDK (API 35, build-tools 35.0.0). Point the build
+at your SDK via `local.properties` (`sdk.dir=...`) or `ANDROID_HOME`.
+
+```bash
+./gradlew ktlintCheck detekt test testDebugUnitTest   # lint + unit tests
+./gradlew assembleDebug                                # debug APK
+```
+
+CI runs the same checks on every push/PR. Release/signing steps are in
+[docs/RELEASE.md](docs/RELEASE.md).
+
+---
+
+## Project status — what's verified vs. not
+
+Early **alpha**: the full software pipeline (screen → profile → real-time assist)
+is built and unit-tested, but **not yet validated on real hardware.**
+
+| Area | Status |
+|---|---|
+| Audiogram screening engine (staircase, fitting) | ✅ pure-Kotlin, unit-tested |
+| Real-time assist DSP (EQ + WDRC + feedback guard + limiter) | ✅ unit-tested; limiter safety suite is the release gate |
+| Android audio engine + foreground assist service | ✅ builds — **needs on-device validation** |
+| Onboarding, persistence, assist UI, accessibility | ✅ |
+| Comfort calibration + output ceiling | ✅ (true dB SPL calibration needs a meter) |
+| Signed release build, privacy, F-Droid metadata | ✅ — [docs/RELEASE.md](docs/RELEASE.md) |
+| AirPods Pro 2/3 detection / transparency routing | ❓ **UNVERIFIED** — [docs/PROTOCOL.md](docs/PROTOCOL.md) |
+
+**On AirPods:** the protocol is reverse-engineered, not public; we build on
+[LibrePods](https://github.com/kavishdevar/librepods)/CAPod. It may not be fully
+controllable from Android without root/firmware access — which is why OpenHearing
+works fully on **any** earbuds first.
 
 ---
 
 ## Architecture
 
-OpenHearing is a clean, multi-module Kotlin project. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for the full picture.
+Clean multi-module Kotlin (Compose/Material 3, MVVM, Hilt, coroutines). DSP and
+safety logic live in pure-Kotlin modules so they're unit-tested with no emulator.
+See [ARCHITECTURE.md](ARCHITECTURE.md).
 
-| Module | Responsibility |
-|---|---|
-| `:app` | Compose + Material 3 UI, navigation, Hilt wiring, onboarding/disclaimers |
-| `:core-common` | Shared units (Hz, dB HL/SPL/FS) and the **safety constants** |
-| `:core-audiogram` | Audiogram model, pure-tone staircase, audiogram→gain fitting (pure Kotlin) |
-| `:core-audio` | Real-time DSP core + the **SAFETY-CRITICAL output limiter** (pure-Kotlin DSP behind an AAudio/Oboe I/O interface) |
-| `:airpods-protocol` | AirPods detection/state/routing — **UNVERIFIED**, behind interfaces |
-| `:data` | Persistence for audiograms, profiles, settings |
-
-The safety-critical and DSP logic lives in pure-Kotlin/JVM modules so it is
-exhaustively unit-tested with no emulator.
-
----
-
-## Building
-
-**Requirements:** JDK 17, Android SDK (API 35 / build-tools 35.0.0). Point the
-build at your SDK via `local.properties` (`sdk.dir=...`) or `ANDROID_HOME`.
-
-```bash
-# Run the full check (lint + unit tests)
-./gradlew ktlintCheck detekt test testDebugUnitTest
-
-# Build the debug APK
-./gradlew assembleDebug
-```
-
-CI runs the same checks on every push and pull request (see
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+`:app` · `:core-common` (units + safety constants) · `:core-audiogram` (screening
++ fitting) · `:core-audio` (DSP + limiter) · `:airpods-protocol` (UNVERIFIED) ·
+`:data` (persistence).
 
 ---
 
 ## Contributing
 
-Contributions are very welcome — this project exists to help people who can't
-access Apple's ecosystem. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and our
-[Code of Conduct](CODE_OF_CONDUCT.md). Hardware testers (AirPods Pro 2/3 + an
-Android phone) are especially valuable — see [docs/PROTOCOL.md](docs/PROTOCOL.md).
-
-For safety expectations on any audio-path change, read [docs/SAFETY.md](docs/SAFETY.md).
-
----
+Contributions welcome — especially **hardware testers** (AirPods Pro 2/3 + an
+Android phone) and accessibility feedback. See [CONTRIBUTING.md](CONTRIBUTING.md),
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [docs/SAFETY.md](docs/SAFETY.md).
 
 ## License
 
-OpenHearing is licensed under the **GNU General Public License v3.0** — see
-[LICENSE](LICENSE). This matches the LibrePods/CAPod ecosystem we build on and
-keeps the project (and its derivatives) open.
+**GPLv3** — see [LICENSE](LICENSE).
 
 ## Credits
 
-- [LibrePods](https://github.com/kavishdevar/librepods) and CAPod for the
-  reverse-engineering groundwork on the AirPods protocol.
+- [LibrePods](https://github.com/kavishdevar/librepods) and CAPod for the AirPods
+  reverse-engineering groundwork.
 
-> OpenHearing is an independent project. It is not affiliated with, endorsed by,
-> or associated with Apple Inc. "AirPods" is a trademark of Apple Inc., used here
-> only to describe hardware compatibility.
+> OpenHearing is an independent project, not affiliated with or endorsed by Apple.
+> "AirPods" is a trademark of Apple Inc., used only to describe hardware compatibility.

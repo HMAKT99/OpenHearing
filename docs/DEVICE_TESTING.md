@@ -59,6 +59,22 @@ speaker or any headset, and sanity-check the audiogram + half-gain output.
 > Calibration is not done yet, so absolute dB HL numbers are estimates. We're
 > verifying *behaviour and safety* here, not clinical accuracy.
 
+## Capture a real demo while you're here
+
+The README screenshots are currently from an emulator. While testing on a real
+device, grab authentic assets:
+
+```bash
+# a screenshot
+adb exec-out screencap -p > docs/images/results.png
+# a ~20-30s screen recording, then convert to GIF (needs ffmpeg)
+adb shell screenrecord --time-limit 30 /sdcard/demo.mp4 && adb pull /sdcard/demo.mp4
+```
+
+Storyboard for the demo GIF: quiet speech nearby → run/recall the screening →
+turn on assist → the same speech is clearly louder. This single asset will do more
+for adoption than anything else (see the launch notes).
+
 ## Later phases
 
 - Phase 2: real-time amplification latency + limiter behaviour under load.
