@@ -29,16 +29,24 @@ class HearingAssistChain(
     private val limiter = LookaheadLimiter(ceilingLinear, sampleRateHz)
 
     // Master gain can never exceed the safety cap, and never attenuates below unity
-    // here (the user's volume cap scales this separately, upstream).
-    private val masterGainLinear: Float =
-        10.0.pow(masterGainDb.coerceIn(0.0, SafetyConstants.MAX_MASTER_GAIN_CAP_DB) / 20.0).toFloat()
+    // here (the user's volume cap scales this separately, upstream). Volatile so the
+    // UI thread can adjust it while the audio thread keeps processing; the limiter
+    // downstream bounds the output regardless of when the new value lands.
+    @Volatile
+    private var masterGainLinear: Float = linearGain(masterGainDb)
+
+    /** Live-adjustable master gain; clamped to [0, SafetyConstants.MAX_MASTER_GAIN_CAP_DB]. */
+    fun setMasterGainDb(db: Double) {
+        masterGainLinear = linearGain(db)
+    }
 
     override fun process(buffer: FloatArray) {
         eq.process(buffer)
         wdrc.process(buffer)
         guard.process(buffer)
+        val gain = masterGainLinear // one volatile read per block
         for (i in buffer.indices) {
-            buffer[i] = buffer[i] * masterGainLinear
+            buffer[i] = buffer[i] * gain
         }
         limiter.processInPlace(buffer)
     }
@@ -57,5 +65,8 @@ class HearingAssistChain(
          * cap; calibration may lower it further. See docs/SAFETY.md / docs/CALIBRATION.md.
          */
         const val DEFAULT_CEILING_LINEAR = 0.9f
+
+        private fun linearGain(db: Double): Float =
+            10.0.pow(db.coerceIn(0.0, SafetyConstants.MAX_MASTER_GAIN_CAP_DB) / 20.0).toFloat()
     }
 }

@@ -65,4 +65,29 @@ class HearingAssistChainTest {
         chain.process(buf)
         assertTrue(buf.all { abs(it) <= 0.8f + 1e-6f })
     }
+
+    @Test
+    fun `live master gain change takes effect between blocks`() {
+        val chain = HearingAssistChain(curve, sampleRate, masterGainDb = 0.0)
+        // Settle the chain, then compare the same input at 0 dB vs +12 dB.
+        chain.process(sine(amp = 0.02, freq = 2000.0, n = sampleRate))
+        val quiet = sine(amp = 0.02, freq = 2000.0, n = sampleRate / 10)
+        chain.process(quiet)
+        chain.setMasterGainDb(12.0)
+        val boosted = sine(amp = 0.02, freq = 2000.0, n = sampleRate / 10)
+        chain.process(boosted)
+        assertTrue(
+            rms(boosted, 0) > rms(quiet, 0) * 2.0,
+            "raising master gain live should audibly boost output",
+        )
+    }
+
+    @Test
+    fun `live master gain change never exceeds cap or ceiling`() {
+        val chain = HearingAssistChain(curve, sampleRate, masterGainDb = 0.0, ceilingLinear = 0.8f)
+        chain.setMasterGainDb(999.0) // absurd request while "running"
+        val buf = sine(amp = 0.9, freq = 1000.0, n = sampleRate)
+        chain.process(buf)
+        assertTrue(buf.all { abs(it) <= 0.8f + 1e-6f }, "live gain change must stay limited")
+    }
 }
