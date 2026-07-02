@@ -38,9 +38,10 @@ import app.openhearing.BuildConfig
 import app.openhearing.R
 import app.openhearing.ui.assist.AssistScreen
 import app.openhearing.ui.hearingtest.HearingTestScreen
+import app.openhearing.ui.manualentry.ManualEntryScreen
 import app.openhearing.ui.theme.OpenHearingTheme
 
-private enum class Screen { HOME, HEARING_TEST, ASSIST, SETTINGS }
+private enum class Screen { HOME, HEARING_TEST, MANUAL_ENTRY, ASSIST, SETTINGS }
 
 private const val SOURCE_URL = "https://github.com/HMAKT99/OpenHearing"
 private const val PRIVACY_URL = "https://github.com/HMAKT99/OpenHearing/blob/main/docs/PRIVACY.md"
@@ -74,7 +75,12 @@ private fun MainNav() {
                 onAssist = { screen = Screen.ASSIST },
                 onSettings = { screen = Screen.SETTINGS },
             )
-        Screen.HEARING_TEST -> HearingTestScreen(onBack = { screen = Screen.HOME })
+        Screen.HEARING_TEST ->
+            HearingTestScreen(
+                onBack = { screen = Screen.HOME },
+                onManualEntry = { screen = Screen.MANUAL_ENTRY },
+            )
+        Screen.MANUAL_ENTRY -> ManualEntryScreen(onBack = { screen = Screen.HOME })
         Screen.ASSIST -> AssistScreen(onBack = { screen = Screen.HOME })
         Screen.SETTINGS -> SettingsScreen(onBack = { screen = Screen.HOME })
     }

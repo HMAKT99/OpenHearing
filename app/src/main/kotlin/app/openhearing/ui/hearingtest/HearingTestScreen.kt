@@ -38,7 +38,11 @@ import app.openhearing.common.Ear
  * audiogram-style chart plus detailed tables and the suggested amplification.
  */
 @Composable
-fun HearingTestScreen(onBack: () -> Unit, viewModel: HearingTestViewModel = hiltViewModel()) {
+fun HearingTestScreen(
+    onBack: () -> Unit,
+    onManualEntry: () -> Unit = {},
+    viewModel: HearingTestViewModel = hiltViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
@@ -53,7 +57,7 @@ fun HearingTestScreen(onBack: () -> Unit, viewModel: HearingTestViewModel = hilt
 
         when (state.phase) {
             TestPhase.NOT_STARTED ->
-                NotStarted(onStart = viewModel::start, onBack = onBack)
+                NotStarted(onStart = viewModel::start, onManualEntry = onManualEntry, onBack = onBack)
             TestPhase.IN_PROGRESS ->
                 InProgress(state = state, viewModel = viewModel)
             TestPhase.DONE ->
@@ -77,7 +81,7 @@ private fun CalibrationNotice() {
 }
 
 @Composable
-private fun NotStarted(onStart: () -> Unit, onBack: () -> Unit) {
+private fun NotStarted(onStart: () -> Unit, onManualEntry: () -> Unit, onBack: () -> Unit) {
     Column {
         Text(
             stringResource(R.string.check_intro),
@@ -85,6 +89,11 @@ private fun NotStarted(onStart: () -> Unit, onBack: () -> Unit) {
             modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
         )
         BigButton(stringResource(R.string.check_start), onClick = onStart)
+        Spacer(Modifier.padding(4.dp))
+        OutlinedButton(
+            onClick = onManualEntry,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        ) { Text(stringResource(R.string.check_manual_entry)) }
         Spacer(Modifier.padding(4.dp))
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.back))

@@ -41,6 +41,9 @@ constructor() {
     @Volatile
     private var config: AssistConfig? = null
 
+    @Volatile
+    private var chain: HearingAssistChain? = null
+
     private val _running = MutableStateFlow(false)
     val running: StateFlow<Boolean> = _running.asStateFlow()
 
@@ -50,26 +53,37 @@ constructor() {
 
     fun hasConfig(): Boolean = config != null
 
+    /**
+     * Adjusts master gain immediately, including while the engine is running.
+     * The chain clamps to the safety cap and the limiter stays downstream.
+     */
+    fun setMasterGainDb(db: Double) {
+        config = config?.copy(masterGainDb = db)
+        chain?.setMasterGainDb(db)
+    }
+
     /** Build the chain from the current config and start the real-time loop. */
     fun startEngine() {
         val c = config ?: return
         if (engine.isRunning) return
-        val chain =
+        val newChain =
             HearingAssistChain(
                 gainCurve = c.gainCurve,
                 sampleRateHz = c.sampleRateHz,
                 masterGainDb = c.masterGainDb,
                 ceilingLinear = c.ceilingLinear,
             )
+        chain = newChain
         engine.start(
             AudioFormat(c.sampleRateHz, channelCount = 1, framesPerBlock = c.framesPerBlock),
-            chain,
+            newChain,
         )
         _running.value = engine.isRunning
     }
 
     fun stopEngine() {
         engine.stop()
+        chain = null
         _running.value = false
     }
 }

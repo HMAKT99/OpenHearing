@@ -12,7 +12,7 @@ import app.openhearing.core.audio.ToneGenerator
 import app.openhearing.core.audio.ToneLevel
 import app.openhearing.core.audio.TonePlayer
 import app.openhearing.data.ProfileRepository
-import app.openhearing.data.activeProfileFrom
+import app.openhearing.data.newProfileFrom
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 /** Screening lifecycle phase for the UI. */
@@ -161,9 +162,12 @@ constructor(
                 gains = gains,
             )
         }
-        // Persist the result as the active profile so assist mode can use it.
+        // Persist the result as a new, dated profile (and make it active) so
+        // assist mode can use it and earlier results stay available as history.
         viewModelScope.launch {
-            runCatching { profileRepository.save(activeProfileFrom(audiogram)) }
+            runCatching {
+                profileRepository.save(newProfileFrom(audiogram, name = "Check ${LocalDate.now()}"))
+            }
         }
     }
 

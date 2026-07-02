@@ -4,13 +4,17 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
+import android.media.AudioManager
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import app.openhearing.MainActivity
 import app.openhearing.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,6 +34,25 @@ class AssistService : Service() {
     @Inject
     lateinit var controller: AssistController
 
+    // Headphones unplugged / Bluetooth disconnected: stop immediately rather than
+    // fall back to the phone speaker, where mic->speaker feedback (howl) is likely.
+    private val becomingNoisyReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) stopSelf()
+            }
+        }
+
+    override fun onCreate() {
+        super.onCreate()
+        ContextCompat.registerReceiver(
+            this,
+            becomingNoisyReceiver,
+            IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -43,6 +66,7 @@ class AssistService : Service() {
     }
 
     override fun onDestroy() {
+        unregisterReceiver(becomingNoisyReceiver)
         controller.stopEngine()
         super.onDestroy()
     }

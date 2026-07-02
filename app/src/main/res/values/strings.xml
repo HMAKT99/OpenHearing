@@ -63,9 +63,23 @@
     <string name="assist_off">Assist is off</string>
     <string name="assist_amplification">Amplification: +%1$d dB</string>
     <string name="assist_amplification_slider">Amplification level in decibels</string>
-    <string name="assist_stop_to_change">Stop assist to change the amplification level.</string>
     <string name="assist_start">Start assist</string>
+    <string name="assist_start_anyway">Start anyway</string>
     <string name="assist_stop_button">Stop assist</string>
+    <string name="assist_speaker_warning">No headphones detected. Assist through the phone speaker usually causes loud feedback (howling). Connect earbuds or headphones — or tap Start anyway if you\'re sure.</string>
+
+    <!-- Profiles -->
+    <string name="profiles_title">Saved profiles</string>
+    <string name="profile_delete">Delete</string>
+    <string name="profile_switch_while_running">Profile changes apply the next time you start assist.</string>
+
+    <!-- Manual entry -->
+    <string name="manual_title">Enter results manually</string>
+    <string name="manual_intro">If you have results from a professional hearing test, enter the threshold for each pitch (in dB HL, as printed on your report). OpenHearing builds your sound profile from them.</string>
+    <string name="manual_save">Save profile</string>
+    <string name="manual_value">%1$d dB HL</string>
+    <string name="manual_slider">%1$s ear, %2$d hertz threshold</string>
+    <string name="check_manual_entry">Enter results manually</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
