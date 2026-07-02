@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sound waves radiating from a point: amplification made visible. Drawn inside
+     the 66dp adaptive-icon safe zone; also used as the monochrome layer. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,47.5 a6.5,6.5 0 1,1 0,13 a6.5,6.5 0 1,1 0,-13 z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M47,43.28 A14,14 0 0,1 47,64.72" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M53.43,35.62 A24,24 0 0,1 53.43,72.38" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:pathData="M59.86,27.96 A34,34 0 0,1 59.86,80.04" />
+</vector>

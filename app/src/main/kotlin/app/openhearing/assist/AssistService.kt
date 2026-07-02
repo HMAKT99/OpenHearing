@@ -67,7 +67,7 @@ class AssistService : Service() {
             NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(getString(R.string.assist_active_title))
                 .setContentText(getString(R.string.assist_active_text))
-                .setSmallIcon(android.R.drawable.ic_lock_silent_mode_off)
+                .setSmallIcon(R.drawable.ic_stat_assist)
                 .setOngoing(true)
                 .setContentIntent(openIntent)
                 .addAction(0, getString(R.string.assist_stop), stopIntent)
