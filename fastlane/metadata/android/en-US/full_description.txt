@@ -1,11 +1,11 @@
 OpenHearing is a free, open-source hearing-assistance app for Android. It runs a
-pure-tone hearing screening, builds a personalized amplification profile from the
+pure-tone hearing check, builds a personalized amplification profile from the
 result, and uses it to amplify quiet sound — like speech — in real time, with any
 headset or earbuds.
 
 Features:
-* Pure-tone hearing screening (per ear, per frequency) with an adaptive staircase
-* A personalized amplification profile derived from your screening
+* Pure-tone hearing check (per ear, per frequency) with an adaptive staircase
+* A personalized amplification profile derived from your check
 * Real-time hearing assist: multi-band gain, dynamic-range compression, and a
   feedback/howl guard
 * A hard output-loudness limiter and a comfort calibration so sound never gets

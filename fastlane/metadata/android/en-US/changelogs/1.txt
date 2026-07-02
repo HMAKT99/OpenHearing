@@ -1,0 +1,7 @@
+First alpha release.
+• Pure-tone hearing check (per ear, per pitch) with an adaptive staircase
+• Personalized amplification profile built from your results, shown as a chart
+• Real-time hearing assist: multi-band gain, compression, feedback guard, and a hard output-loudness limiter
+• Comfort calibration, instant stop, high-contrast theme, large controls
+• Fully offline — no accounts, no ads, no network access
+Not a medical device; not a substitute for a professional hearing exam.
