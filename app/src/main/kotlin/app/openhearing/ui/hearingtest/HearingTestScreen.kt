@@ -21,20 +21,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.openhearing.R
 import app.openhearing.audiogram.Audiogram
 import app.openhearing.common.Ear
 
 /**
- * Phase 1 debug screen: runs the pure-tone screening through the phone speaker or
- * any connected headset (no AirPods needed), then shows the resulting audiogram
- * and the prescribed half-gain curve. Lets the maintainer exercise the engine on
- * real hardware.
+ * Hearing-check screen: runs the pure-tone screening through the phone speaker or
+ * any connected headset (no AirPods needed), then shows the result as an
+ * audiogram-style chart plus detailed tables and the suggested amplification.
  */
 @Composable
 fun HearingTestScreen(onBack: () -> Unit, viewModel: HearingTestViewModel = hiltViewModel()) {
@@ -47,7 +48,7 @@ fun HearingTestScreen(onBack: () -> Unit, viewModel: HearingTestViewModel = hilt
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
     ) {
-        Text("Hearing screening (debug)", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.check_title), style = MaterialTheme.typography.headlineSmall)
         CalibrationNotice()
 
         when (state.phase) {
@@ -68,9 +69,7 @@ private fun CalibrationNotice() {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
     ) {
         Text(
-            "Estimate only — uncalibrated. This screening is not a medical test and " +
-                "not a substitute for a professional hearing exam. Use headphones in a " +
-                "quiet room. Keep the volume comfortable; stop if anything is too loud.",
+            stringResource(R.string.check_notice),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(12.dp),
         )
@@ -81,14 +80,15 @@ private fun CalibrationNotice() {
 private fun NotStarted(onStart: () -> Unit, onBack: () -> Unit) {
     Column {
         Text(
-            "You'll hear quiet tones at different pitches in each ear. After each " +
-                "tone, tap whether you heard it. It takes a couple of minutes.",
+            stringResource(R.string.check_intro),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
         )
-        BigButton("Start screening", onClick = onStart)
+        BigButton(stringResource(R.string.check_start), onClick = onStart)
         Spacer(Modifier.padding(4.dp))
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Back") }
+        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.back))
+        }
     }
 }
 
@@ -100,29 +100,37 @@ private fun InProgress(state: HearingTestUiState, viewModel: HearingTestViewMode
             modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
         )
         Text(
-            "Point ${state.completed + 1} of ${state.total}",
+            stringResource(R.string.check_progress, state.completed + 1, state.total),
             style = MaterialTheme.typography.labelLarge,
         )
         Text(
-            earLabel(state.currentEar) + " ear · ${state.currentFrequencyHz?.toInt() ?: "—"} Hz",
+            stringResource(
+                R.string.check_ear_freq,
+                earLabel(state.currentEar),
+                state.currentFrequencyHz?.toInt() ?: 0,
+            ),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = 4.dp),
         )
         Text(
-            if (state.isPlaying) "Playing tone…" else "Did you hear the tone?",
+            if (state.isPlaying) {
+                stringResource(R.string.check_playing)
+            } else {
+                stringResource(R.string.check_question)
+            },
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 16.dp, bottom = 12.dp),
         )
 
-        BigButton("Yes, I heard it", onClick = viewModel::onHeard)
+        BigButton(stringResource(R.string.check_heard), onClick = viewModel::onHeard)
         Spacer(Modifier.padding(4.dp))
-        BigButton("No, I didn't", onClick = viewModel::onNotHeard)
+        BigButton(stringResource(R.string.check_not_heard), onClick = viewModel::onNotHeard)
         Spacer(Modifier.padding(4.dp))
         OutlinedButton(
             onClick = viewModel::replay,
             modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-        ) { Text("Play tone again") }
+        ) { Text(stringResource(R.string.check_replay)) }
 
         SafetyControls(state = state, viewModel = viewModel)
     }
@@ -130,21 +138,22 @@ private fun InProgress(state: HearingTestUiState, viewModel: HearingTestViewMode
 
 @Composable
 private fun SafetyControls(state: HearingTestUiState, viewModel: HearingTestViewModel) {
+    val sliderDescription = stringResource(R.string.check_volume_cap_slider)
     Card(
         modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text("Volume cap", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.check_volume_cap), style = MaterialTheme.typography.labelLarge)
             Slider(
                 value = state.masterCap,
                 onValueChange = viewModel::setMasterCap,
-                modifier = Modifier.semantics { contentDescription = "Maximum volume cap" },
+                modifier = Modifier.semantics { contentDescription = sliderDescription },
             )
             Button(
                 onClick = viewModel::mute,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-            ) { Text("Stop / mute now") }
+            ) { Text(stringResource(R.string.check_mute)) }
         }
     }
 }
@@ -153,21 +162,38 @@ private fun SafetyControls(state: HearingTestUiState, viewModel: HearingTestView
 private fun Results(state: HearingTestUiState, onRestart: () -> Unit, onBack: () -> Unit) {
     Column {
         Text(
-            "Screening complete",
+            stringResource(R.string.check_complete),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
         )
+        state.audiogram?.let { ResultsChart(it) }
         state.audiogram?.let { AudiogramTable(it) }
         state.gains.forEach { GainTable(it) }
         Text(
-            "These are uncalibrated estimates, not a diagnosis. See an audiologist " +
-                "for a professional hearing assessment.",
+            stringResource(R.string.check_results_disclaimer),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(vertical = 16.dp),
         )
-        BigButton("Run again", onClick = onRestart)
+        BigButton(stringResource(R.string.check_run_again), onClick = onRestart)
         Spacer(Modifier.padding(4.dp))
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Back") }
+        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.back))
+        }
+    }
+}
+
+@Composable
+private fun ResultsChart(audiogram: Audiogram) {
+    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.check_chart_title), style = MaterialTheme.typography.titleSmall)
+            AudiogramChart(audiogram, modifier = Modifier.padding(top = 12.dp))
+            Text(
+                stringResource(R.string.check_chart_hint),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
     }
 }
 
@@ -175,18 +201,18 @@ private fun Results(state: HearingTestUiState, onRestart: () -> Unit, onBack: ()
 private fun AudiogramTable(audiogram: Audiogram) {
     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Column(Modifier.padding(16.dp)) {
-            Text("Audiogram (estimated dB HL)", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.check_table_title), style = MaterialTheme.typography.titleSmall)
             listOf(Ear.RIGHT, Ear.LEFT).forEach { ear ->
                 Text(
-                    "${earLabel(ear)} ear",
+                    stringResource(R.string.ear_label, earLabel(ear)),
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(top = 8.dp),
                 )
                 audiogram.frequenciesFor(ear).forEach { f ->
                     val hl = audiogram.thresholdAt(ear, f)?.value?.toInt()
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("${f.value.toInt()} Hz")
-                        Text("${hl ?: "—"} dB HL")
+                        Text(stringResource(R.string.hz_value, f.value.toInt()))
+                        Text(stringResource(R.string.db_hl_value, hl?.toString() ?: "—"))
                     }
                 }
             }
@@ -199,13 +225,13 @@ private fun GainTable(summary: GainSummary) {
     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                "Prescribed gain — ${earLabel(summary.ear)} ear (half-gain rule)",
+                stringResource(R.string.gain_title, earLabel(summary.ear)),
                 style = MaterialTheme.typography.titleSmall,
             )
             summary.points.forEach { p ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("${p.frequency.value.toInt()} Hz")
-                    Text("+${p.gainDb.toInt()} dB")
+                    Text(stringResource(R.string.hz_value, p.frequency.value.toInt()))
+                    Text(stringResource(R.string.gain_db_value, p.gainDb.toInt()))
                 }
             }
         }
@@ -225,8 +251,9 @@ private fun BigButton(label: String, onClick: () -> Unit) {
     }
 }
 
+@Composable
 private fun earLabel(ear: Ear?): String = when (ear) {
-    Ear.LEFT -> "Left"
-    Ear.RIGHT -> "Right"
+    Ear.LEFT -> stringResource(R.string.ear_left)
+    Ear.RIGHT -> stringResource(R.string.ear_right)
     null -> "—"
 }

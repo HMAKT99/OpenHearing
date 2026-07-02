@@ -1,12 +1,84 @@
 <resources>
     <string name="app_name">OpenHearing</string>
-    <string name="tagline">Open-source hearing assistance for Android.</string>
+    <string name="tagline">Free, open-source sound amplification for any earbuds. No accounts, no ads — nothing leaves your phone.</string>
 
     <string name="disclaimer_title">Not a medical device</string>
-    <string name="disclaimer_body">OpenHearing is a sound-amplification and hearing-assistance tool. It is NOT a medical device and is NOT a substitute for a professional hearing exam. It does not diagnose or treat any condition. If you have concerns about your hearing, please see an audiologist or doctor. Always keep the volume at a comfortable level and stop if you feel any discomfort.</string>
+    <string name="disclaimer_body">OpenHearing is a sound-amplification and hearing-assistance tool. It is NOT a medical device and NOT a substitute for a professional hearing exam. It does not diagnose, treat, cure, or prevent any condition. If you have concerns about your hearing, please see an audiologist or doctor. Always keep the volume at a comfortable level and stop if you feel any discomfort.</string>
 
     <string name="assist_channel_name">Hearing assist</string>
     <string name="assist_active_title">Hearing assist is on</string>
     <string name="assist_active_text">Amplifying sound around you. Tap Stop to turn off.</string>
     <string name="assist_stop">Stop</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome">Welcome</string>
+    <string name="onboarding_ack">Please read and acknowledge the above before using OpenHearing.</string>
+    <string name="onboarding_agree">I understand and agree</string>
+
+    <!-- Home -->
+    <string name="home_hearing_check">Hearing check</string>
+    <string name="home_assist">Hearing assist</string>
+    <string name="home_settings">Settings</string>
+
+    <!-- Hearing check -->
+    <string name="check_title">Hearing check</string>
+    <string name="check_notice">Estimate only — uncalibrated. This check is not a medical test and not a substitute for a professional hearing exam. Use headphones in a quiet room. Keep the volume comfortable; stop if anything is too loud.</string>
+    <string name="check_intro">You\'ll hear quiet tones at different pitches in each ear. After each tone, tap whether you heard it. It takes a couple of minutes.</string>
+    <string name="check_start">Start hearing check</string>
+    <string name="check_progress">Point %1$d of %2$d</string>
+    <string name="check_ear_freq">%1$s ear · %2$d Hz</string>
+    <string name="check_playing">Playing tone…</string>
+    <string name="check_question">Did you hear the tone?</string>
+    <string name="check_heard">Yes, I heard it</string>
+    <string name="check_not_heard">No, I didn\'t</string>
+    <string name="check_replay">Play tone again</string>
+    <string name="check_volume_cap">Volume cap</string>
+    <string name="check_volume_cap_slider">Maximum volume cap</string>
+    <string name="check_mute">Stop / mute now</string>
+    <string name="check_complete">Hearing check complete</string>
+    <string name="check_chart_title">Your results (estimated)</string>
+    <string name="check_chart_hint">Each point is the quietest level you heard at that pitch. Lower points mean quieter sounds were heard. Detailed values are listed below.</string>
+    <string name="check_chart_description">Chart of hearing check results. Detailed values are listed in the table below.</string>
+    <string name="check_table_title">Detailed thresholds (estimated dB HL)</string>
+    <string name="check_results_disclaimer">These are uncalibrated estimates, not a diagnosis. For a professional hearing assessment, see an audiologist.</string>
+    <string name="check_run_again">Run again</string>
+    <string name="ear_left">Left</string>
+    <string name="ear_right">Right</string>
+    <string name="ear_label">%1$s ear</string>
+    <string name="hz_value">%1$d Hz</string>
+    <string name="db_hl_value">%1$s dB HL</string>
+    <string name="chart_legend_right">Right ear</string>
+    <string name="chart_legend_left">Left ear</string>
+    <string name="gain_title">Suggested amplification — %1$s ear</string>
+    <string name="gain_db_value">+%1$d dB</string>
+
+    <!-- Assist -->
+    <string name="assist_title">Hearing assist</string>
+    <string name="assist_safety_note">Amplifies sound around you in real time. Output is hard-limited for safety, but keep the level comfortable and stop if anything is too loud. Not a medical device.</string>
+    <string name="assist_no_profile">Run the hearing check first so assist mode can use your sound profile.</string>
+    <string name="assist_on">Assist is ON</string>
+    <string name="assist_off">Assist is off</string>
+    <string name="assist_amplification">Amplification: +%1$d dB</string>
+    <string name="assist_amplification_slider">Amplification level in decibels</string>
+    <string name="assist_stop_to_change">Stop assist to change the amplification level.</string>
+    <string name="assist_start">Start assist</string>
+    <string name="assist_stop_button">Stop assist</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_high_contrast">High-contrast theme</string>
+    <string name="settings_comfort_title">Comfort calibration</string>
+    <string name="settings_comfort_desc">Sets the maximum loudness assist mode will ever reach. Tap Preview, then lower the level if the tone is too loud. (For a precise dB SPL calibration you\'d need a sound-level meter — see docs.)</string>
+    <string name="settings_comfort_slider">Maximum comfortable loudness</string>
+    <string name="settings_comfort_preview">Preview maximum loudness</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_body">Free software under the GNU GPL v3. No accounts, no ads, no trackers — the app never asks for internet access, so nothing you do can leave your phone.</string>
+    <string name="about_source">Source code</string>
+    <string name="about_privacy">Privacy policy</string>
 </resources>

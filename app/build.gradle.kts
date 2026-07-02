@@ -65,6 +65,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfig.VERSION_NAME shown on the About card
     }
 }
 

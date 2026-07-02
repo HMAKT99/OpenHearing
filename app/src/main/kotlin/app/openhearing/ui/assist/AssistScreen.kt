@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.openhearing.R
 import app.openhearing.assist.AssistService
 import app.openhearing.common.SafetyConstants
 import kotlinx.coroutines.launch
@@ -83,21 +85,27 @@ fun AssistScreen(onBack: () -> Unit, viewModel: AssistViewModel = hiltViewModel(
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
     ) {
-        Text("Hearing assist", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.assist_title), style = MaterialTheme.typography.headlineSmall)
         SafetyNote()
 
         if (!state.hasProfile) {
             Text(
-                "Run the hearing screening first so assist mode can use your profile.",
+                stringResource(R.string.assist_no_profile),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(vertical = 16.dp),
             )
-            OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Back") }
+            OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.back))
+            }
             return@Column
         }
 
         Text(
-            if (state.running) "Assist is ON" else "Assist is off",
+            if (state.running) {
+                stringResource(R.string.assist_on)
+            } else {
+                stringResource(R.string.assist_off)
+            },
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = 8.dp),
@@ -114,34 +122,40 @@ fun AssistScreen(onBack: () -> Unit, viewModel: AssistViewModel = hiltViewModel(
             Button(
                 onClick = { AssistService.stop(context) },
                 modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
-            ) { Text("Stop assist", style = MaterialTheme.typography.titleMedium) }
+            ) { Text(stringResource(R.string.assist_stop_button), style = MaterialTheme.typography.titleMedium) }
         } else {
             Button(
                 onClick = ::startAssist,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
-            ) { Text("Start assist", style = MaterialTheme.typography.titleMedium) }
+            ) { Text(stringResource(R.string.assist_start), style = MaterialTheme.typography.titleMedium) }
         }
 
         Spacer(Modifier.padding(4.dp))
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Back") }
+        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.back))
+        }
     }
 }
 
 @Composable
 private fun GainControl(masterGainDb: Double, onChange: (Double) -> Unit, enabled: Boolean) {
+    val sliderDescription = stringResource(R.string.assist_amplification_slider)
     Card(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
         Column(Modifier.padding(16.dp)) {
-            Text("Amplification: +${masterGainDb.toInt()} dB", style = MaterialTheme.typography.labelLarge)
+            Text(
+                stringResource(R.string.assist_amplification, masterGainDb.toInt()),
+                style = MaterialTheme.typography.labelLarge,
+            )
             Slider(
                 value = masterGainDb.toFloat(),
                 onValueChange = { onChange(it.toDouble()) },
                 valueRange = 0f..SafetyConstants.MAX_MASTER_GAIN_CAP_DB.toFloat(),
                 enabled = enabled,
-                modifier = Modifier.semantics { contentDescription = "Amplification level in decibels" },
+                modifier = Modifier.semantics { contentDescription = sliderDescription },
             )
             if (!enabled) {
                 Text(
-                    "Stop assist to change the amplification level.",
+                    stringResource(R.string.assist_stop_to_change),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -156,8 +170,7 @@ private fun SafetyNote() {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
     ) {
         Text(
-            "Amplifies sound around you in real time. Output is hard-limited for safety, " +
-                "but keep the level comfortable and stop if anything is too loud. Not a medical device.",
+            stringResource(R.string.assist_safety_note),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(12.dp),
         )
