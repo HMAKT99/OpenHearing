@@ -79,6 +79,49 @@ R8 release build (minify + resource shrink); signing from a gitignored
 on-device only), docs/RELEASE.md (signed-build steps, distribution, release gates),
 F-Droid fastlane metadata. Verified `assembleRelease` produces a shrunk APK.
 
+### Phase A — Consumer polish ✅ (2026-07-02)
+Market research first (three parallel studies: user demand, FOSS go-to-market,
+repo audit — findings summarized in the session, key regulatory point below).
+Then: adaptive launcher icon + monochrome layer and a proper notification icon
+(sound-waves motif); audiogram-style results **chart** (log-spaced pitch axis,
+inverted dB HL, red-O right / blue-X left per audiology convention, CVD-validated
+colors, marker shape carries identity); system back handling + `rememberSaveable`
+nav state; About card (version, GPLv3, source/privacy links); **all UI strings
+moved to strings.xml** (translation now possible) with a regulatory copy pass —
+"hearing check"/"sound profile" wording, "(debug)" title dropped, full
+"does not diagnose, treat, cure, or prevent" formula; fastlane changelog + real
+emulator screenshots. Whole flow smoke-tested on the API 35 emulator.
+
+**Regulatory note (Gate 2 input):** FDA's 2022 hearing-device guidance lists
+"audiogram + fitting formula programming output to the user's hearing profile"
+as device-defining *design* evidence — disclaimers alone don't neutralize it
+(21 CFR 801.4; Apple's De Novo created 21 CFR 874.3335 for exactly this software
+category). No enforcement found against free/OSS apps 2023–2026; actions target
+commercial efficacy claims. Copy now avoids "hearing loss"/severity/hearing-aid
+comparisons everywhere user-facing. Maintainer legal review still required
+before consumer release.
+
+### Phase B — User-demanded features ✅ (2026-07-03)
+Driven by the demand research (top asks: live control, professional-audiogram
+import, profiles, latency trust):
+- **Live master gain**: volatile per-block parameter in `HearingAssistChain`,
+  adjustable while running; clamped to `SafetyConstants`, limiter downstream;
+  +2 chain safety tests.
+- **Manual audiogram entry** (`ManualEntryScreen`/`ViewModel`): thresholds from
+  a professional test (per ear/pitch, 5 dB steps) saved as a profile — bypasses
+  the uncalibrated on-device check.
+- **Multi-profile persistence**: encoded profile list + active id in DataStore
+  (`ProfileListCodec`, internal, tested); every check/manual entry saves a new
+  dated profile (= history); legacy single-profile keys migrate on read;
+  switcher + delete UI on the assist screen; +5 repository tests.
+- **Safety stops**: `ACTION_AUDIO_BECOMING_NOISY` receiver stops assist on
+  headset disconnect (never falls back to the speaker); starting with no
+  headphones shows a feedback warning and requires "Start anyway".
+- **Quick-settings tile** (`AssistTileService`): toggle assist from the shade;
+  opens the app if permission/profile is missing.
+All flows verified on the emulator (including tile toggle and live slider while
+running). 76 JVM tests green.
+
 ### Phase 3 — AirPods ❌ NOT STARTED
 The reverse-engineered (LibrePods/CAPod) protocol is `UNVERIFIED`. `:airpods-protocol`
 ships interfaces/models only. Needs real BLE/HCI capture on hardware and the
@@ -88,8 +131,11 @@ is exactly why the app is earbud-agnostic first.
 
 ## Verified vs. NOT verified
 
-- **Verified (local):** all pure logic — staircase, fitting, codec, DSP, and the
-  limiter invariant — via 69 JVM unit tests; debug + release APKs compile; lint clean.
+- **Verified (local):** all pure logic — staircase, fitting, codecs, DSP, the
+  limiter invariant, live-gain safety, and profile persistence/migration — via
+  76 JVM unit tests; debug + release APKs compile; lint clean. UI flows (check →
+  chart, manual entry, profiles, speaker warning, QS tile) exercised on an API 35
+  emulator.
 - **NOT verified:** anything requiring hardware — actual audio playback/capture,
   assist latency, feedback behaviour with real earbuds, stereo routing, true loudness
   in dB SPL, and the entire AirPods protocol.
@@ -103,5 +149,7 @@ maybe Play with careful non-medical framing — only after the two release gates
 ## Commit history (this work)
 
 `be5e7c0` issue-template links → `5a46572` Phase 0 scaffold → `76eb3c9` Phase 1 →
-`96e3da8` Phase 2 → `79f1e39` Phase 4 + calibration → `6aa69b8` Phase 5.
+`96e3da8` Phase 2 → `79f1e39` Phase 4 + calibration → `6aa69b8` Phase 5 →
+`a3b7eab`/`d552efc`/`400fe8c` Phase A (icons, chart, strings/copy, metadata) →
+`6d0f7c0`/`ac59420`/`dcda17b` Phase B (live gain, profiles, manual entry, tile).
 All authored solely by the maintainer (no co-author), Conventional Commits.

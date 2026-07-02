@@ -19,22 +19,27 @@ test). Hearing safety is non-negotiable — see [docs/SAFETY.md](docs/SAFETY.md)
 - **Repo:** https://github.com/HMAKT99/OpenHearing (owner `HMAKT99`, branch `main`)
 - **License:** GPLv3 · **Author:** Arun Kumar Thiagarajan <arunkt.bm14@gmail.com>
 
-## Current status (2026-06-29)
+## Current status (2026-07-03)
 
-Phases 0,1,2,4,5 are **built, unit-tested, pushed**. The app is **alpha — ready
-for hardware testing, NOT ready to ship to consumers.**
+Phases 0,1,2,4,5 plus consumer phases A,B are **built, unit-tested**. The app is
+**alpha — ready for hardware testing, NOT ready to ship to consumers.**
 
 | Phase | State |
 |---|---|
 | 0 Scaffold (modules, CI, docs, license) | ✅ done |
-| 1 Audiogram engine (staircase, fitting) + debug screen | ✅ done |
+| 1 Audiogram engine (staircase, fitting) + check screen | ✅ done |
 | 2 Real-time assist DSP + Android engine + service | ✅ done |
 | 3 AirPods protocol | ❌ **not started** — UNVERIFIED, [docs/PROTOCOL.md](docs/PROTOCOL.md) |
 | 4 Persistence, onboarding, assist UI, accessibility | ✅ done |
 | 5 Release build, signing, privacy, F-Droid metadata | ✅ done |
+| A Consumer polish (icons, results chart, translatable strings, regulatory copy, About, fastlane assets) | ✅ done 2026-07-02 |
+| B User-demanded features (live gain, manual audiogram entry, multi-profile history, disconnect auto-stop + speaker warning, QS tile) | ✅ done 2026-07-03 |
 | Calibration | ✅ comfort-ceiling proxy; true dB SPL needs a meter |
 
-**69 unit tests green; debug + release (R8) APKs build.**
+**76 unit tests green; debug + release (R8) APKs build.** UI flows exercised on
+an API 35 emulator (screenshots in fastlane metadata). Market research + launch
+playbook and the FDA "audiogram + fitting formula = device design" finding are
+recorded in [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md) (Phase A entry).
 
 ### TWO GATES before any consumer release (cannot be closed in code)
 1. **On-device safety validation** — no audio has ever run on a real device. Assist
@@ -67,9 +72,12 @@ for hardware testing, NOT ready to ship to consumers.**
   `FeedbackGuard`, `LookaheadLimiter`, `HearingAssistChain`; `ToneGenerator`,
   `TonePlayer`, `AndroidAudioEngine`, `OutputLimiter`.
 - `:airpods-protocol` (Android lib) — `AirPodsController` interface, all `UNVERIFIED`.
-- `:data` (Android lib) — `SettingsRepository` + `ProfileRepository` (DataStore).
-- `:app` — Compose UI (`OpenHearingApp` nav, onboarding gate, hearingtest/, assist/,
-  settings), Hilt modules (`di/`), `assist/AssistController` + `AssistService`.
+- `:data` (Android lib) — `SettingsRepository` + `ProfileRepository` (DataStore;
+  multi-profile list via internal `ProfileListCodec`, legacy keys auto-migrate).
+- `:app` — Compose UI (`OpenHearingApp` nav, onboarding gate, hearingtest/ incl.
+  `AudiogramChart`, manualentry/, assist/, settings), Hilt modules (`di/`),
+  `assist/AssistController` + `AssistSessionFactory` + `AssistService` +
+  `AssistTileService` (quick-settings tile).
 
 Data flow: screening → `Audiogram` → `FittingStrategy` → `GainCurve` →
 `HearingAssistChain` (EQ→WDRC→feedback guard→master gain→**limiter**) →
@@ -109,10 +117,19 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
 ## What's next
 
 - **Run the Phase 1/2 device tests** ([docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md))
-  on a real phone; fix whatever they surface.
+  on a real phone; fix whatever they surface. This is the launch gate.
+- **Phase C differentiators** (from market research, in value order): apply the
+  profile to media/calls (system-wide EQ — the "Headphone Accommodations for
+  Android" gap), per-ear stereo assist, environment presets, remote-mic mode,
+  multi-band WDRC.
+- **Launch sequence once device tests pass**: IzzyOnDroid → F-Droid (first
+  hearing-assist app there) → Show HN (repo link + backstory comment) →
+  r/fossdroid → hearingtracker forum → press tips (9to5Google, Android Police).
+  Skip Product Hunt. Trust assets: Exodus 0-tracker report, reproducible builds,
+  published SAFETY/FITTING docs.
 - **Phase 3 — AirPods**: capture BLE/HCI logs, verify the LibrePods-documented
   protocol item by item ([docs/PROTOCOL.md](docs/PROTOCOL.md) checklist).
-- Per-ear stereo assist; multi-band WDRC; true calibration; consumer-release gates.
+- True calibration; consumer-release gates (device validation + legal review).
 
 ## Doc index
 
